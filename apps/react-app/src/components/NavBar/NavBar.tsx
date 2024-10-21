@@ -2,8 +2,28 @@ import React from "react";
 import Grid from "@mui/material/Grid";
 import { Box, Button, Typography } from "@mui/material";
 import TravelExploreIcon from "@mui/icons-material/TravelExplore";
+import { useNavigate } from "react-router-dom";
 
 export default function NavBar(): React.JSX.Element {
+  const navigate = useNavigate();
+
+  const handleLoginClick = () => {
+    navigate('/login');
+  };
+
+  const handleCategoriesClick = () => {
+    navigate('/categories');
+  };
+
+  const handlePostsClick = () => {
+    navigate('/posts');
+  };
+
+  const handleHomeClick = () => {
+    navigate('/');
+  };
+
+
   return (
     <Grid
       item
@@ -24,7 +44,9 @@ export default function NavBar(): React.JSX.Element {
           gap: "16px",
           alignItems: "center",
         }}
+        onClick={handleHomeClick}
       >
+        Home
         <TravelExploreIcon sx={{ width: 45, height: 45 }} />
         <Box
           sx={{
@@ -49,6 +71,19 @@ export default function NavBar(): React.JSX.Element {
           gap: 2,
         }}
       >
+         <Button
+          sx={{
+            textDecoration: "none",
+            fontWeight: "bold",
+            color: "white",
+            backgroundColor: "#1e8fff",
+            borderRadius: "8px",
+            padding: "8px",
+          }}
+          onClick={handlePostsClick}
+        >
+          Posts
+        </Button>
         <Button
           sx={{
             textDecoration: "none",
@@ -58,6 +93,7 @@ export default function NavBar(): React.JSX.Element {
             borderRadius: "8px",
             padding: "8px",
           }}
+          onClick={handleCategoriesClick}
         >
           Categories
         </Button>
@@ -70,6 +106,7 @@ export default function NavBar(): React.JSX.Element {
             borderRadius: "8px",
             padding: "8px",
           }}
+          onClick={handleLoginClick}
         >
           Login
         </Button>

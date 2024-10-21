@@ -20,4 +20,6 @@ export const FormContainer = styled(Grid)`
   border: 1px solid #ddd;
   width: 30%;
   margin: 0 auto;
+  height: 100%;
+  max-height: 700px;
 `;

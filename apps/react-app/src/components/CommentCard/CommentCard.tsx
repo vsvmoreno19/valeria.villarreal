@@ -14,8 +14,6 @@ type  CommentType = {
   }
 }
 
-// ACT 3 - Receive comment prop
-
 function CommentCard({comment}: CommentType) {
   return (
     <Container item sm={8}>

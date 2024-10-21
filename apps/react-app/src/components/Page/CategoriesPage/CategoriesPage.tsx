@@ -1,18 +1,28 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, TextField } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Grid,
+  TextField,
+  IconButton,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  TableSortLabel,
+  TablePagination,
+} from "@mui/material";
 import { PageContainer } from "./CategoriesPage.styles";
 import { Category } from "../../../types";
-import IconButton from '@mui/material/IconButton';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import { useEffect, useState } from "react";
 
 const categories: Category[] = [
   { id: "663fef70d513515319551d1f", name: "Travel" },
@@ -25,6 +35,10 @@ function CategoriesPage() {
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const [categoryName, setCategoryName] = useState("");
   const [isEditing, setIsEditing] = useState(false);
+  const [order, setOrder] = useState<"asc" | "desc">("asc");
+  const [orderBy, setOrderBy] = useState<keyof Category>("name");
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
 
   useEffect(() => {
     setRows(categories);
@@ -62,6 +76,30 @@ function CategoriesPage() {
     setCategoryName("");
   }
 
+  function handleRequestSort(property: keyof Category) {
+    const isAsc = orderBy === property && order === "asc";
+    setOrder(isAsc ? "desc" : "asc");
+    setOrderBy(property);
+  }
+
+  function handleChangePage(event: unknown, newPage: number) {
+    setPage(newPage);
+  }
+
+  function handleChangeRowsPerPage(event: React.ChangeEvent<HTMLInputElement>) {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  }
+
+  const sortedRows = rows.slice().sort((a, b) => {
+    if (orderBy === "name") {
+      return (order === "asc" ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name));
+    }
+    return 0;
+  });
+
+  const paginatedRows = sortedRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+
   return (
     <PageContainer container>
       Categories Page
@@ -75,12 +113,20 @@ function CategoriesPage() {
           <Table sx={{ minWidth: 650 }} aria-label="simple table">
             <TableHead>
               <TableRow>
-                <TableCell>Name</TableCell>
+                <TableCell>
+                  <TableSortLabel
+                    active={orderBy === "name"}
+                    direction={orderBy === "name" ? order : "asc"}
+                    onClick={() => handleRequestSort("name")}
+                  >
+                    Name
+                  </TableSortLabel>
+                </TableCell>
                 <TableCell align="right">Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.map((row) => (
+              {paginatedRows.map((row) => (
                 <TableRow
                   key={row.id}
                   sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -90,26 +136,43 @@ function CategoriesPage() {
                   </TableCell>
                   <TableCell align="right">
                     <IconButton aria-label="edit" onClick={() => handleEditItem(row)}>
-                      <EditIcon />
+                      <EditIcon fontSize="small" />
                     </IconButton>
                     <IconButton aria-label="delete" onClick={() => handleDeleteItem(row.id)}>
-                      <DeleteIcon />
+                      <DeleteIcon fontSize="small" />
                     </IconButton>                    
                   </TableCell>
                 </TableRow>
               ))}
+              {paginatedRows.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={2} align="center">
+                    No categories available
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25]}
+            component="div"
+            count={rows.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+            labelDisplayedRows={({ from, to, count }) => `${from}-${to} of ${count !== -1 ? count : `more than ${to}`}`}
+          />
         </TableContainer>
       </Grid>
 
-      <Dialog open={open} onClose={() => setOpen(false)}>
-        <DialogTitle>{isEditing ? "Edit Category" : "Add Category"}</DialogTitle>
+      <Dialog open={open} onClose={() => setOpen(false)} maxWidth="md" fullWidth>
+        <DialogTitle>{isEditing ? "Edit Category" : "Create Category"}</DialogTitle>
         <DialogContent>
           <TextField
             autoFocus
             margin="dense"
-            label="Category Name"
+            label="Name"
             type="text"
             fullWidth
             value={categoryName}
@@ -117,8 +180,8 @@ function CategoriesPage() {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpen(false)}>Cancel</Button>
-          <Button onClick={handleSave}>{isEditing ? "Save" : "Add"}</Button>
+          <Button variant="outlined" onClick={() => setOpen(false)}>Cancel</Button>
+          <Button variant="contained" onClick={handleSave}>{isEditing ? "Save" : "Create"}</Button>
         </DialogActions>
       </Dialog>
     </PageContainer>

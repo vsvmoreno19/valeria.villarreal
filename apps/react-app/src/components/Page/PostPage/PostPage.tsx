@@ -8,8 +8,8 @@ import {
 } from "./PostPage.styles";
 
 const post = {
-  image: "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/2a/30/90/8a/caption.jpg?w=1200&h=-1&s=1",
-  title: "Chipinque",
+  image: "https://th.bing.com/th/id/R.e0bad63364a867fea652212c254bf869?rik=avtecz5aXVdevA&riu=http%3a%2f%2fwww.viajejet.com%2fwp-content%2fviajes%2fLago-Moraine-Parque-Nacional-Banff-Alberta-Canada.jpg&ehk=6qRhWDqqQAEkSFs%2bHP8p2Bl6XfPbjznSoORh%2bsEJ%2bQE%3d&risl=&pid=ImgRaw&r=0",
+  title: 'A good place to camp',
   postID: "001",
   comments: [
     {
@@ -29,7 +29,7 @@ const post = {
       __v: "000",
     },
    ],
-   description: "Parque impresionante en un entorno boscoso, famoso por sus senderos naturales y un observatorio en la montaña.",
+   description: 'Beautiful water, incredible landscapes and huge bears everywhere. Everything your soul needs.',
  };
 
 function PostPage() {
