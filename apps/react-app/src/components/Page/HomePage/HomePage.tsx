@@ -1,35 +1,52 @@
-import PostList from '../../PostList';
-import CategoryButtonGroup from '../../CategoryButtonGroup';
-import CreatePostButton from '../../CreatePostButton';
-import { Category } from '../../catTypes';
+import { useCallback, useContext, useEffect, useState } from "react";
+
+import PostList from "../../PostList";
+import CategoryButtonGroup from "../../CategoryButtonGroup/CategoryButtonGroup";
+import CreatePostButton from "../../CreatePostButton/CreatePostButton";
+import { Category } from "../../../types";
+import { PostContext } from "../../../context";
+import Loading from "../../Loading/Loading";
 
 const categories: Category[] = [
-  { id: "123", name: "Travel" },
-  { id: "1234", name: "Food" },
-];
-const selectedCategory: Category = { id: "123", name: "Travel" };
-const posts = [
-  {
-    id: "345",
-    title: "The average path a grandparent took to get to school",
-    image:
-      "https://th.bing.com/th/id/R.385e7dbec0e6c313cfd6dc3b6fff1c95?rik=Ps5ZHpTWtX4y3A&pid=ImgRaw&r=0",
-    description:
-      "Description",
-    category: null,
-    comments: ["13242"],
-  },
+  { id: "663fef70d513515319551d1f", name: "Travel" },
+  { id: "663fef70d513515319546d1f", name: "Food" },
 ];
 
 function HomePage() {
+  const { posts, getPosts } = useContext(PostContext);
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(
+    null
+  );
+
+  const handleOpenForm = () => {};
+
+  const handleSelectCategory = useCallback(
+    (category: Category) => {
+      const isCategoryAlreadySelected = category.id === selectedCategory?.id;
+      getPosts(isCategoryAlreadySelected ? undefined : category.id);
+      setSelectedCategory(isCategoryAlreadySelected ? null : category);
+    },
+    [selectedCategory, getPosts]
+  );
+
+  useEffect(getPosts, [getPosts]);
+
+  if (!posts) return <Loading />;
+
   return (
     <>
-      <CreatePostButton />
+      <CreatePostButton handleOpenForm={handleOpenForm} />
       <CategoryButtonGroup
         categories={categories}
         selectedCategory={selectedCategory}
+        handleSelectCategory={handleSelectCategory}
       />
-      <PostList />
+
+      <PostList
+        posts={posts}
+        selectedCategory={selectedCategory}
+        handleOpenForm={handleOpenForm}
+      />
     </>
   );
 }

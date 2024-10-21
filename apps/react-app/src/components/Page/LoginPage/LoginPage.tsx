@@ -1,6 +1,5 @@
 import { Grid } from "@mui/material";
-import { PageContainer } from "./LogPage";
-
+import { PageContainer } from "../CategoriesPage/CategoriesPage.styles";
 
 function LoginPage() {
     return (

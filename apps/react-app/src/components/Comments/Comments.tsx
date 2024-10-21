@@ -1,17 +1,24 @@
-import { Title, Container, FormContainer } from './Comments.styles';
-import CommentCard from '../CommentCard/CommentCard';
+import CommentCard from "../CommentCard";
+import { Title, Container, FormContainer } from "./Comments.styles";
 
-interface CommentsProps {
-  comments: { id: string; author: string; content: string; }[];
+type  CommentType = {
+  comments: {
+    _id: string,
+    author: string,
+    content: string,
+    createdAt: string,
+    updatedAt: string,
+    __v: string,
+  }[]
 }
 
-function Comments({ comments }: CommentsProps) {
+function Comments({comments}: CommentType) {
   return (
     <Container container>
-      <Title item sm={8}>
+      <Title item sm={8}>   
         <h4>Comments</h4>
       </Title>
-      {comments.map((comment)=><CommentCard key={comment.id} comment={comment} />)}
+      { comments.map(comment => <CommentCard comment={comment}    key={comment._id} ></CommentCard> ) }
       <FormContainer item sm={8}>
         Form
       </FormContainer>

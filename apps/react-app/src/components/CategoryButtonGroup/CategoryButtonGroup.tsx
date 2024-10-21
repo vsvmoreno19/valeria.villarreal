@@ -1,28 +1,35 @@
-import { ButtonGroup } from '@mui/material';
-import { Category } from '../catTypes';
-import { Container, StyledButton } from './CategoryButtonGroup.styles';
-import { ReactNode } from 'react';
+import { ButtonGroup } from "@mui/material";
+
+import { Container, StyledButton } from "./CategoryButtonGroup.styles";
+import { Category } from "../../types";
 
 interface CategoryButtonGroupProps {
   categories: Category[];
   selectedCategory: Category | null;
+  handleSelectCategory: (category: Category) => void;
 }
 
-function CategoryButtonGroup({ categories, selectedCategory }: CategoryButtonGroupProps) {
-  const categoryNodes: ReactNode[] = [];
-  categories.forEach((category) => {
-    categoryNodes.push(
-      <StyledButton type="button" selected={false}>
-        {category.name}
-      </StyledButton>
-    );
-  });
+function CategoryButtonGroup({
+  categories,
+  selectedCategory,
+  handleSelectCategory,
+}: CategoryButtonGroupProps) {
   return (
     <Container item>
       <ButtonGroup aria-label="category button group" color="inherit">
-        {categoryNodes}
+        {categories.map((category) => (
+          <StyledButton
+            type="button"
+            key={category.id}
+            selected={category.name === selectedCategory?.name}
+            onClick={() => handleSelectCategory(category)}
+          >
+            {category.name}
+          </StyledButton>
+        ))}
       </ButtonGroup>
     </Container>
   );
 }
+
 export default CategoryButtonGroup;
