@@ -1,6 +1,7 @@
-import React, { createContext, useState, useCallback } from "react";
+import React, { createContext, useState, useCallback, useContext  } from "react";
 
 import { Post } from "../types";
+import { SnackbarContext } from "./SnackbarProvider";
 
 interface PostContextProps {
   posts: Post[] | null;
@@ -68,6 +69,7 @@ export function PostProvider({
 }: PostProviderProps): React.JSX.Element {
   const [serverData, setServerData] = useState(postList);
   const [posts, setPosts] = useState<Post[] | null>(postList);
+  const {createAlert} = useContext(SnackbarContext)
 
   const getPosts = useCallback(
     (categoryID?: string) => {
@@ -90,8 +92,9 @@ export function PostProvider({
     }) => {
       setServerData((prev) => prev.filter((post: Post) => post.id !== postID));
       getPosts(selectedCategoryID);
+      createAlert("success", "post was deleted");
     },
-    [getPosts]
+    [getPosts, createAlert]
   );
 
   return (
