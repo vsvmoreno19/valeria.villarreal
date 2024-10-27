@@ -12,6 +12,7 @@ import {
 } from "./PostList.styles";
 import { Post, Category } from "../../types";
 import { PostContext } from "../../context";
+import { NavLink } from "react-router-dom";
 
 interface PostListProps {
   posts: Post[];
@@ -33,15 +34,20 @@ function PostList({ posts, selectedCategory, handleOpenForm }: PostListProps) {
           md={posts.length === 1 ? 12 : 6}
         >
           <CardContainer>
-            <CardContent>
-              <h1>{post.title}</h1>
-              <h3>
-                {post.comments.length}
-                {post.comments.length > 1 ? " Comments" : " Comment"}
-              </h3>
-              <h3>{shorten(post.description, 70)}</h3>
-              <Typography variant="overline">{post.category?.name}</Typography>
-            </CardContent>
+          <NavLink to={`post/${post.id}`} style={{
+              textDecoration: "none",
+              color: "white"
+            }} >
+              <CardContent>
+                <h1>{post.title}</h1>
+                <h3>
+                  {post.comments.length}
+                  {post.comments.length > 1 ? " Comments" : " Comment"}
+                </h3>
+                <h3>{shorten(post.description, 70)}</h3>
+                <Typography variant="overline">{post.category?.name}</Typography>
+              </CardContent>
+            </NavLink>
             <CardActions className="card-actions">
               <IconButton
                 color="inherit"

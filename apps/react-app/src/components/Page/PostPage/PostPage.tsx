@@ -70,8 +70,9 @@ function PostPage() {
     /*+get post+*/
 
     useEffect(() => {
-      getPostData({postID})
-     }, [getPostData]);
+      if(postID) 
+        getPostData({postID})
+       }, [getPostData, postID]);
 
   if (!post) return <Loading />;
 

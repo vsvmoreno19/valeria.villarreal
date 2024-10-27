@@ -16,7 +16,7 @@ export default function NavBar(): React.JSX.Element {
   };
 
   const handlePostsClick = () => {
-    navigate('/posts');
+    navigate('/post/671e5bfd4e1e9611a145afca');
   };
 
   const handleHomeClick = () => {
