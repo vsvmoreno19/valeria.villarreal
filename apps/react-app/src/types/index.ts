@@ -66,6 +66,19 @@ export interface CategoriesResponse {
   __v: number;
 }
 
+export interface PostResponse {
+  _id: string;
+  title: string;
+  image: string;
+  description: string;
+  category: CategoriesResponse | null;
+  comments: CommentResponse[];
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+}
+
+
 export type Post = {
   id: string;
   title: string;

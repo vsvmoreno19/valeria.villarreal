@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   Button,
   Dialog,
@@ -23,11 +23,10 @@ import { Category } from "../../../types";
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { getCategories, createCategory, updateCategory, deleteCategory } from "../../../api";
+import Loading from "../../Loading";
+import { CategoriesResponse } from "../../catTypes";
 
-const categories: Category[] = [
-  { id: "663fef70d513515319551d1f", name: "Travel" },
-  { id: "663fef70d513515319546d1f", name: "Food" },
-];
 
 function CategoriesPage() {
   const [rows, setRows] = useState<Category[]>([]);
@@ -39,57 +38,121 @@ function CategoriesPage() {
   const [orderBy, setOrderBy] = useState<keyof Category>("name");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [loadingCategories, setLoadingCategories] = useState(false);
 
-  useEffect(() => {
-    setRows(categories);
+  const onError = useCallback(() => {
+    console.log("error");
   }, []);
 
-  function handleEditItem(category: Category) {
+  const onLoading = (isLoading: boolean) => {
+    setLoadingCategories(isLoading);
+  };
+
+  const getCategoriesList = useCallback(async () => {
+    const onSuccess = (data: CategoriesResponse[]) => {
+      const transformedData: Category[] = data.map(item => ({
+        id: item._id,
+        name: item.name,
+      }));
+      setRows(transformedData);
+      console.log("added rows", transformedData);
+    };
+
+    await getCategories({ onSuccess, onError, onLoading });
+  }, [onError]);
+
+  const addCategory = useCallback(
+    async (newCategory: { name: string }) => {
+      const onSuccess = (data: CategoriesResponse) => {
+        const transformedData: Category = {
+          id: data._id,
+          name: data.name,
+        };
+        setRows(prevRows => [...prevRows, transformedData]);
+        console.log("Category successfully created.");
+      };
+
+      await createCategory({ newCategory, onSuccess, onError, onLoading });
+    },
+    [onError]
+  );
+
+  const removeCategory = useCallback(
+    async (categoryID: string) => {
+      const onSuccess = () => {
+        setRows(prevRows => prevRows.filter(row => row.id !== categoryID));
+        console.log("Category successfully deleted.");
+      };
+      await deleteCategory({ categoryID, onSuccess, onError, onLoading });
+    },
+    [onError]
+  );
+
+  const updateCategoryData = useCallback(
+    async (categoryID: string, updatedCategory: { name: string }) => {
+      const onSuccess = async () => {
+        getCategoriesList();
+        console.log("Category successfully updated.");
+      };
+
+      await updateCategory({ categoryID, updatedCategory, onSuccess, onError, onLoading });
+    },
+    [getCategoriesList, onError]
+  );
+
+  useEffect(() => {
+    getCategoriesList();
+  }, [getCategoriesList]);
+
+  const handleEditItem = (category: Category) => {
     setSelectedCategory(category);
     setCategoryName(category.name);
     setIsEditing(true);
     setOpen(true);
-  }
+  };
 
-  function handleDeleteItem(categoryId: string) {
-    if (window.confirm("Are you sure you want to delete this category?")) {
-      setRows(rows.filter(row => row.id !== categoryId));
-    }
-  }
+  const handleDeleteItem = (categoryID: string) => {
+    removeCategory(categoryID);
+  };
 
-  function handleAddItem() {
+  const handleAddItem = () => {
     setSelectedCategory(null);
     setCategoryName("");
     setIsEditing(false);
     setOpen(true);
-  }
+  };
 
-  function handleSave() {
+  const handleSave = async () => {
     if (isEditing && selectedCategory) {
-      setRows(rows.map(row => row.id === selectedCategory.id ? { ...row, name: categoryName } : row));
+      await updateCategoryData(selectedCategory.id, { name: categoryName });
     } else {
-      const newCategory: Category = { id: Date.now().toString(), name: categoryName };
-      setRows([...rows, newCategory]);
+      await addCategory({ name: categoryName });
     }
     setOpen(false);
     setSelectedCategory(null);
     setCategoryName("");
-  }
+  };
 
-  function handleRequestSort(property: keyof Category) {
+  const handleClose = () => {
+    setOpen(false);
+    setSelectedCategory(null);
+    setCategoryName("");
+  };
+
+  const handleRequestSort = (property: keyof Category) => {
     const isAsc = orderBy === property && order === "asc";
     setOrder(isAsc ? "desc" : "asc");
     setOrderBy(property);
-  }
+  };
 
-  function handleChangePage(event: unknown, newPage: number) {
+  const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
-  }
+  };
 
-  function handleChangeRowsPerPage(event: React.ChangeEvent<HTMLInputElement>) {
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
-  }
+  };
 
   const sortedRows = rows.slice().sort((a, b) => {
     if (orderBy === "name") {
@@ -99,6 +162,8 @@ function CategoriesPage() {
   });
 
   const paginatedRows = sortedRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+
+  if (!rows || loadingCategories) return <Loading />;
 
   return (
     <PageContainer container>
@@ -166,7 +231,7 @@ function CategoriesPage() {
         </TableContainer>
       </Grid>
 
-      <Dialog open={open} onClose={() => setOpen(false)} maxWidth="md" fullWidth>
+      <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
         <DialogTitle>{isEditing ? "Edit Category" : "Create Category"}</DialogTitle>
         <DialogContent>
           <TextField
@@ -180,7 +245,7 @@ function CategoriesPage() {
           />
         </DialogContent>
         <DialogActions>
-          <Button variant="outlined" onClick={() => setOpen(false)}>Cancel</Button>
+          <Button variant="outlined" onClick={handleClose}>Cancel</Button>
           <Button variant="contained" onClick={handleSave}>{isEditing ? "Save" : "Create"}</Button>
         </DialogActions>
       </Dialog>

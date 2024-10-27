@@ -5,19 +5,16 @@ import { Title, Container, FormContainer } from "./Comments.styles";
 
 type CommentType = {
   comments: {
-    _id: string,
     author: string,
     content: string,
-    createdAt: string,
-    updatedAt: string,
-    __v: string,
   }[]
 }
+const postID = "671e5bfd4e1e9611a145afca"
 
 function Comments({ comments: initialComments }: CommentType) {
   const [comments, setComments] = useState(initialComments);
 
-  const addComment = (comment: { _id: string, author: string, content: string, createdAt: string, updatedAt: string, __v: string }) => {
+  const addComment = (comment: {author: string, content: string }) => {
     setComments([...comments, comment]);
   };
 
@@ -27,10 +24,10 @@ function Comments({ comments: initialComments }: CommentType) {
         <h4>Comments</h4>
       </Title>
       {comments.map(comment => (
-        <CommentCard comment={comment} key={comment._id} />
+        <CommentCard comment={comment}/>
       ))}
       <FormContainer item sm={8}>
-        <CommentForm addComment={addComment} />
+        <CommentForm addComment={addComment} postID={postID} />
       </FormContainer>
     </Container>
   );

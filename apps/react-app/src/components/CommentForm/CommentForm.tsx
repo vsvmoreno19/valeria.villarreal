@@ -3,16 +3,19 @@ import Button from '@mui/material/Button';
 import { useForm } from "react-hook-form";
 import { Container, Row, StyledTextField } from './CommentFrom.styles';
 import { Content } from '../CommentCard/CommentCard.styles';
+import { createComment } from '../../api/endpoints/comments';
+import { CommentResponse } from '../catTypes';
 
 type FormValues = {
   comment: string;
 };
 
 type CommentFormProps = {
-  addComment: (comment: { _id: string, author: string, content: string, createdAt: string, updatedAt: string, __v: string }) => void;
+  addComment: (comment: { author: string, content: string}) => void;
+  postID: string;
 };
 
-function CommentForm({ addComment }: CommentFormProps) {
+function CommentForm({ addComment, postID }: CommentFormProps) {
   const form = useForm<FormValues>({
     defaultValues: {
       comment: ''
@@ -21,17 +24,34 @@ function CommentForm({ addComment }: CommentFormProps) {
   const { register, handleSubmit, formState, reset } = form;
   const { errors } = formState;
 
-  const onSubmit = (data: FormValues) => {
-    const newComment = {
-      _id: Date.now().toString(),
-      author: "Anonymus",
-      content: data.comment,
-      createdAt: "2024",
-      updatedAt: "2024",
-      __v: "000",
+  const onSubmit = async (data: FormValues) => {
+    const onSuccess = (newComment: CommentResponse) => {
+      addComment(newComment);
+      reset();
     };
-    addComment(newComment);
-    reset();
+
+    const onError = (error: any) => {
+      console.error("Error creating comment:", error);
+    };
+
+    const onLoading = (isLoading: boolean) => {
+      console.log("Loading:", isLoading);
+    };
+
+    try {
+      await createComment({
+        postID,
+        newComment: {
+          content: data.comment,
+          author: 'Anonymous'
+        },
+        onSuccess,
+        onError,
+        onLoading
+      });
+    } catch (error) {
+      console.error("Error creating comment:", error);
+    }
   };
 
   return (

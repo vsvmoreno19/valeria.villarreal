@@ -5,12 +5,8 @@ import { Container, Content, Author } from "./CommentCard.styles";
 
 type  CommentType = {
   comment: {
-    _id: string,
     author: string,
     content: string,
-    createdAt: string,
-    updatedAt: string,
-    __v: string,
   }
 }
 

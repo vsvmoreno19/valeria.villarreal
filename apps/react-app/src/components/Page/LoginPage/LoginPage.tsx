@@ -2,6 +2,9 @@ import { PageContainer, FormContainer } from "./LoginPage.styles";
 import { TextField, Button, Stack, Typography } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import { useCallback } from "react";
+import { login } from "../../../api";
+import { User, AuthLoginResponse } from "../../../types";
 
 type FormValues = {
   email: string;
@@ -18,12 +21,25 @@ const LoginPage = () => {
   const { register, handleSubmit, formState } = form;
   const { errors } = formState;
   const navigate = useNavigate();
+
+  const userLogin = useCallback(
+    async (user: User) => {
+      const onSuccess = async (data: AuthLoginResponse) => {
+        console.log("login data", data);
+        navigate('/');
+      };
+      await login({ user, onSuccess });
+    },
+    [navigate]
+  );
+
   const onSubmit = (data: FormValues) => {
     console.log(data);
     if (data.email && data.password) {
-      navigate('/');
+      userLogin({ username: data.email, password: data.password });
     }
   };
+
   const handleSignUpClick = () => {
     navigate('/signup');
   };
@@ -31,7 +47,7 @@ const LoginPage = () => {
   return (
     <PageContainer container>
       <FormContainer item md={8} xs={8} lg={8}>
-      <Typography variant="h5" component="h1" gutterBottom  sx={{ paddingBottom: 4, fontWeight: 'bold' }}>
+        <Typography variant="h5" component="h1" gutterBottom sx={{ paddingBottom: 4, fontWeight: 'bold' }}>
           Login
         </Typography>
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
@@ -54,7 +70,7 @@ const LoginPage = () => {
               sx={{ paddingBottom: 4 }}
             />
             <Button type="submit" variant="contained">Login</Button>
-            <Button type="submit" variant="outlined" onClick={handleSignUpClick}>Sign Up</Button>
+            <Button variant="outlined" onClick={handleSignUpClick}>Sign Up</Button>
           </Stack>
         </form>
       </FormContainer>
