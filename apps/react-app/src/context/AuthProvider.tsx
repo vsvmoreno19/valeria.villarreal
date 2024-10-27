@@ -24,9 +24,8 @@ export function AuthProvider({
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
   const validateToken = useCallback(async () => {
-    const token =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImRhdmlkQG91dGxvb2suY29tIiwiaWF0IjoxNzMwMDUyMjk3LCJleHAiOjE3MzAwNTU4OTd9.0Esx681e6Hw8-U55ArUMRQNHUqX0EK8LrLzVhYexT68";
-      // ACT 11 - Get the token from localStorage
+    //const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImRhdmlkQG91dGxvb2suY29tIiwiaWF0IjoxNzE4Nzg3NjM3LCJleHAiOjE3MTg3OTEyMzd9.rDm4lewYLIsjbLNYM1oNjCzhlwaYMKYmm3S4eEBanuw"
+    const token = localStorage.getItem("apiToken");
     const onLoading = (isLoading: boolean) => setAuthLoading(isLoading);
 
     onLoading(true);
@@ -40,7 +39,9 @@ export function AuthProvider({
           setIsAuthenticated(true);
         }
       })
-      .catch(() => setIsAuthenticated(false))
+      .catch(() => {
+        setIsAuthenticated(false)
+      })
       .finally(() => onLoading(false));
   }, []);
 

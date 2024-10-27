@@ -2,7 +2,6 @@ import { AxiosError, AxiosResponse } from "axios";
 
 import axios from "../axios";
 import {
-  // Category,
   CategoriesResponse,
   NewCategory
 } from "../../types";
@@ -33,7 +32,6 @@ export const getCategories = async ({
     .finally(() => onLoading && onLoading(false));
 };
 
-// ACT 9 - Create callbacks fuctions to call create, update and delete APIs
 export const  createCategory = async ({
   newCategory,
   onSuccess,

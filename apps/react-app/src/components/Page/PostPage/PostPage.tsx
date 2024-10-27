@@ -41,7 +41,6 @@ import { getPost } from "../../../api/endpoints/posts";
   const postID = "671e5bfd4e1e9611a145afca"
 
 function PostPage() {
-    // ACT 9 - Use postID variable to fetch the post data
   const [post, setPost] = useState<Post>();
 
     /*get post*/
@@ -67,7 +66,6 @@ function PostPage() {
   
       await getPost({postID, onSuccess})
     }, []);
-    /*+get post+*/
 
     useEffect(() => {
       if(postID) 

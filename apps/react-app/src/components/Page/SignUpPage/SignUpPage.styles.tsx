@@ -9,7 +9,7 @@ export const PageContainer = styled(Grid)`
   flex-direction: column;
   justify-content: center;
   flex-grow: 1;
-  background-color: #f5f5f5; /* Fondo gris claro */
+  background-color: #f5f5f5;
 `;
 
 export const FormContainer = styled(Grid)`
